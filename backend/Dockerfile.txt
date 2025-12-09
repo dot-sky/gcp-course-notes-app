@@ -1,0 +1,29 @@
+# Use an official Node.js runtime as a parent image
+FROM node:18-alpine
+
+# Set the working directory in the container
+WORKDIR /usr/src/app
+
+# Copy package.json and package-lock.json (if you have one)
+# to install dependencies first. This optimizes Docker caching.
+COPY package.json ./
+# If you have a package-lock.json or yarn.lock, copy it too:
+# COPY package-lock.json ./
+
+# Install app dependencies
+# Use npm ci for clean installs in CI/CD environments, or npm install
+RUN npm install --production
+
+# Copy the rest of your application source code
+COPY . .
+
+# Cloud Run services must listen on the port specified by the PORT environment variable.
+# The default is 8080, but it's good practice to explicitly set it or use process.env.PORT in your app.
+ENV PORT 8080
+
+# Expose the port your app runs on
+EXPOSE 8080
+
+# Run the application
+# Use the "start" script defined in your package.json
+CMD [ "npm", "start" ]
